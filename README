@@ -1,0 +1,40 @@
+= tc-subseq =
+human genome sequences on tokyo cabinet for sub-sequence exstraction
+
+== Usage ==
+
+# Download chromFa.zip from UCSC.
+rake data:hg
+
+# Comvert fasta to tsv.
+rake data:tsv
+
+# Create tch database
+rake tch:create
+
+# Import tsv file.
+rake tch:import
+
+# Check data.
+tchmgr get chr chr1_1
+
+# Extract sub-sequence 
+ruby subseq.rb chr1:100010,100100
+
+== Statistics ==
+
+* Size of nucleotide: 
+* Size of fasta files: 
+* Size of tsv file:
+* Size of index file:
+* Importing time:
+* Extracting speed:
+
+== Dependency ==
+
+1. Ruby
+2. Tokyo Cabinet
+2. Tokyo Cabinet Ruby
+3. curl
+4. unzip
+
