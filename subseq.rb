@@ -8,7 +8,7 @@ end
 
 
 db = HDB::new
-if !db.open("chr",  FDB::OWRITER | FDB::OCREAT)
+if !db.open("chr", FDB::OWRITER | FDB::OCREAT)
   ecode = db.ecode
   STDERR.printf("open error: %s\n", db.errmsg(ecode))
   exit
@@ -19,9 +19,9 @@ arg = ARGV.shift
 chr, pos = arg.split(":")
 start, stop = pos.split(",")
 start = start.to_i
-stop = stop.to_i
+stop  = stop.to_i
 
-chunk = ((start - 1) / width) + 1
+chunk  = ((start - 1) / width) + 1
 chunke = ((stop - 1) / width) + 1
 
 subseq = ""
