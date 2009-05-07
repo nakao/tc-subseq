@@ -16,7 +16,6 @@ unless db.open(hdbname)
   STDERR.printf("hdb open error: #{hdbname}: %s\n", db.errmsg(ecode))
   exit
 end
-p db
 
 arg = ARGV.shift
 chr, pos = arg.split(":")
