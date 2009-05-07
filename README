@@ -18,23 +18,31 @@ rake tch:import
 # Check data.
 tchmgr get chr chr1_1
 
-# Extract sub-sequence 
+# Extract sub-sequence specified by chromosome:START,STOP
 ruby subseq.rb chr1:100010,100100
 
 == Statistics ==
 
 * Size of nucleotide: 
 * Size of fasta files: 
-* Size of tsv file:
+* Size of tsv file: 3.7G
 * Size of index file:
 * Importing time:
 * Extracting speed:
 
+
 == Dependency ==
 
-1. Ruby
-2. Tokyo Cabinet
-2. Tokyo Cabinet Ruby
+1. Ruby http://ruby-lang.org
+2. Tokyo Cabinet http://tokyocabinet.sourceforge.net/
+2. Tokyo Cabinet Ruby http://tokyocabinet.sourceforge.net/perlpkg/
 3. curl
 4. unzip
 
+== Author ==
+
+Mitsuteru Nakao <n AT bioruby.org>
+
+== Licence ==
+
+Same as Tokyo Cabinet, LGPL.
