@@ -7,6 +7,8 @@ dbname = 'chr'
 
 
 namespace :tch do
+  task :all => [:create, :import]
+  
   desc "create"
   task :create do
     sh "#{tchmgr} create #{dbname}"
