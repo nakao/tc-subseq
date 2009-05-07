@@ -1,20 +1,22 @@
 require 'tokyocabinet'
 include TokyoCabinet
 
+hdbname = 'chr'
+width = 50
+
+
 if ARGV.size < 1
   STDERR.puts "Usage: ruby subseq.rb chr1:100,110"
   exit
 end
 
-
 db = HDB::new
-if !db.open("chr", FDB::OWRITER | FDB::OCREAT)
+if !db.open(hdbname, FDB::OWRITER | FDB::OCREAT)
   ecode = db.ecode
   STDERR.printf("open error: %s\n", db.errmsg(ecode))
   exit
 end
 
-width = 50
 arg = ARGV.shift
 chr, pos = arg.split(":")
 start, stop = pos.split(",")
