@@ -13,7 +13,7 @@ end
 db = HDB::new
 unless db.open(hdbname)
   ecode = db.ecode
-  STDERR.printf("hdb open error: %s\n", db.errmsg(ecode))
+  STDERR.printf("hdb open error: #{hdbname}: %s\n", db.errmsg(ecode))
   exit
 end
 p db
