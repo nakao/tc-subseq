@@ -11,11 +11,12 @@ if ARGV.size < 1
 end
 
 db = HDB::new
-if !db.open(hdbname, FDB::OWRITER | FDB::OCREAT)
+unless db.open(hdbname)
   ecode = db.ecode
-  STDERR.printf("open error: %s\n", db.errmsg(ecode))
+  STDERR.printf("hdb open error: %s\n", db.errmsg(ecode))
   exit
 end
+p db
 
 arg = ARGV.shift
 chr, pos = arg.split(":")
