@@ -2,28 +2,80 @@
 #
 
 hg = "http://hgdownload.cse.ucsc.edu/goldenPath/10april2003/bigZips/chromFa.zip"
-tchmgr = "tchmgr"
-dbname = 'chr'
+
+def fa_files
+  Dir.glob("*.fa").map do |file|
+    file.split(".fa").first
+  end
+end
 
 
 namespace :tch do
   task :all => [:create, :import]
-  
+
   desc "create"
   task :create do
-    sh "#{tchmgr} create #{dbname}"
+    fa_files.each do |entry_id|
+      sh "tchmgr create tch_#{entry_id}"
+    end
   end
 
   desc "import"
   task :import do
-    sh "#{tchmgr} importtsv #{dbname} hg.tsv"
+    fa_files.each do |entry_id|    
+      sh "tchmgr importtsv tch_#{entry_id} tch_#{entry_id}.tsv"
+    end
   end
   
   desc "get demo"
   task :demo do
-    sh "#{tchmgr} get #{dbname} chr1_10"
+    sh "tchmgr get tch_chr1 10"
   end
 end
+
+
+
+namespace :tch_hg do
+  desc "create"
+  task :create do
+    sh "tchmgr create tch_hg"
+  end
+
+  desc "import"
+  task :import do
+    sh "tchmgr importtsv tch_hg hg.tsv"
+  end
+  
+  desc "get demo"
+  task :demo do
+    sh "tchmgr get tch_hg chr1_10"
+  end
+end
+
+
+
+
+namespace :tcf do
+  desc "create"
+  task :create do
+    fa_files.each do |entry_id|
+      sh "tcfmgr create tcf_#{entry_id} 50"
+    end
+  end
+
+  desc "import"
+  task :import do
+    fa_files.each do |entry_id|    
+      sh "tcfmgr importtsv tcf_#{entry_id} tcf_#{entry_id}.tsv"
+    end
+  end
+  
+  desc "get demo"
+  task :demo do
+    sh "tcfmgr get tcf_chr1 10"
+  end
+end
+
 
 
 namespace :data do
@@ -34,7 +86,7 @@ namespace :data do
   end
 
   desc "Make tsv."
-  task :tsv do
+  task "hg.tsv" do
     entry_id = ""
     fa_files = Dir.glob("*.fa")
     p fa_files
@@ -50,5 +102,37 @@ namespace :data do
       end
     end
   end
+
+
+  desc "Make tsv for TCF."
+  task :tsv_tcf do
+    entry_id = ""
+    fa_files.each do |entry_id|
+      p entry_id
+      File.open("tcf_#{entry_id}.tsv", "w") do |f|
+        File.open("#{entry_id}.fa").each_with_index do |line, i|
+          next if line =~ /^>/
+          line.chomp!
+          f.puts ["#{i}", line].join("\t")
+        end
+      end
+    end
+  end
+
+  desc "Make tsv for TCH."
+  task :tsv_tch do
+    entry_id = ""
+    fa_files.each do |entry_id|
+      p entry_id
+      File.open("tch_#{entry_id}.tsv", "w") do |f|
+        File.open("#{entry_id}.fa").each_with_index do |line, i|
+          next if line =~ /^>/
+          line.chomp!
+          f.puts ["#{entry_id}_#{i}", line].join("\t")
+        end
+      end
+    end
+  end
+
 end
 
