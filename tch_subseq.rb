@@ -12,7 +12,7 @@ end
 arg = ARGV.shift
 chr, pos = arg.split(":")
 
-dbname = "tch_#{chr}"
+dbname = "#{chr}.tch"
 db = HDB::new
 unless db.open(dbname)
   ecode = db.ecode

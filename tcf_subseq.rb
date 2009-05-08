@@ -12,7 +12,7 @@ end
 arg = ARGV.shift
 chr, pos = arg.split(":")
 
-dbname = "tcf_#{chr}"
+dbname = "#{chr}.tcf"
 db = FDB::new
 unless db.open(dbname)
   ecode = db.ecode

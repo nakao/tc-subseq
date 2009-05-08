@@ -16,14 +16,14 @@ namespace :tch do
   desc "create"
   task :create do
     fa_files.each do |entry_id|
-      sh "tchmgr create tch_#{entry_id}"
+      sh "tchmgr create #{entry_id}.tch"
     end
   end
 
   desc "import"
   task :import do
     fa_files.each do |entry_id|    
-      sh "tchmgr importtsv tch_#{entry_id} tch_#{entry_id}.tsv"
+      sh "tchmgr importtsv #{entry_id}.tch tch_#{entry_id}.tsv"
     end
   end
   
@@ -38,17 +38,17 @@ end
 namespace :tch_hg do
   desc "create"
   task :create do
-    sh "tchmgr create tch_hg"
+    sh "tchmgr create hg.tch"
   end
 
   desc "import"
   task :import do
-    sh "tchmgr importtsv tch_hg hg.tsv"
+    sh "tchmgr importtsv hg.tch hg.tsv"
   end
   
   desc "get demo"
   task :demo do
-    sh "tchmgr get tch_hg chr1_10"
+    sh "tchmgr get hg.tch chr1_10"
   end
 end
 
@@ -59,20 +59,20 @@ namespace :tcf do
   desc "create"
   task :create do
     fa_files.each do |entry_id|
-      sh "tcfmgr create tcf_#{entry_id} 50"
+      sh "tcfmgr create #{entry_id}.tcf 50"
     end
   end
 
   desc "import"
   task :import do
     fa_files.each do |entry_id|    
-      sh "tcfmgr importtsv tcf_#{entry_id} tcf_#{entry_id}.tsv"
+      sh "tcfmgr importtsv #{entry_id}.tcf tcf_#{entry_id}.tsv"
     end
   end
   
   desc "get demo"
   task :demo do
-    sh "tcfmgr get tcf_chr1 10"
+    sh "tcfmgr get chr1.tcf 10"
   end
 end
 
