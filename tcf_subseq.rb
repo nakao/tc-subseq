@@ -7,4 +7,4 @@ end
 
 arg = ARGV.shift
 chr, pos = arg.split(":")
-puts TCF_SS.new(chr, pos).subseq
+puts TCF_SS.subseq(chr, pos)
