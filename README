@@ -46,7 +46,7 @@ Human genome sequence on tokyo cabinet for fast sub-sequence exstraction
 
 * Extracting speed:
 
- $ time ruby tc-subseq/tcf_subseq.rb chr1:100010,100100
+ $ time ruby tcf_subseq.rb chr1:100010,100100
  GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
  ruby tcf_subseq.rb   0.00s user 0.00s system 74% cpu 0.008 total
 
