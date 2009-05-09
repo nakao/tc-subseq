@@ -5,7 +5,7 @@ include TokyoCabinet
 #
 # Inherited class should have folowing variables and method:
 #  1. @db  -- Tokyo Cabinet db instance.
-#  2. @dbname -- file name of db
+#  2. @file_name -- file name of db
 #  3. #get_arg(chunk) -- convert method from chunk to key
 #
 class SubSeq
@@ -21,7 +21,7 @@ class SubSeq
   
   # 
   def initialize(pos, path = nil)
-    dbname = [path, @filename].compact.join("/")
+    dbname = [path, @file_name].compact.join("/")
     unless @db.open(dbname)
       ecode = @db.ecode
       STDERR.printf("open error: #{dbname}: %s\n", @db.errmsg(ecode))
@@ -57,7 +57,7 @@ end
 # Implimantation of sub-sequence extraction using TCF Tokyo Cabinet Fixed-length Index.
 class TCF_SS < SubSeq
   def initialize(chr, pos)
-    @filename = "#{chr}.tcf"
+    @file_name = "#{chr}.tcf"
     @db = FDB::new
     super(pos)
   end
@@ -72,7 +72,7 @@ end
 
 class TCH_SS < SubSeq
   def initialize(chr, pos)
-    @filename = "#{chr}.tch"
+    @file_name = "#{chr}.tch"
     @db = HDB::new
     super(pos)
   end
