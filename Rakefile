@@ -1,10 +1,19 @@
 # Human genome sequences on Tokyo Cabinet 
 #
 
+namespace :test do
+  desc "unit test for subseq.rb"
+  task :subseq do
+    sh "ruby test_subseq.rb"
+    ["test.tsv", "test.tcf"].each do |file|
+      File.delete(file) if File.exists?(file)
+    end
+  end
+end
+
 
 namespace :data do
   namespace :ucsc do
-
     desc "UCSC hg chromFa"
     task :hg do
       hg = "http://hgdownload.cse.ucsc.edu/goldenPath/10april2003/bigZips/chromFa.zip"
