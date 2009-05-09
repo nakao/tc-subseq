@@ -11,12 +11,13 @@ include TokyoCabinet
 class SubSeq
   WIDTH = 50    
 
-  # 
+  # TCF_SS.subseq("chr1", "1,10")
   def self.subseq(chr, pos)
     self.new(chr, pos).subseq
   end
 
-  # 
+  # ss = TCF_SS.new("chr1", "1,10")
+  # ss.subseq
   attr_reader :subseq
   
   # 
@@ -31,7 +32,8 @@ class SubSeq
     start, stop = pos.split(",")
     start = start.to_i
     stop  = stop.to_i
-
+    raise ArgumentError, "Sub-sequence position should be 'start <= stop'." if start > stop
+    
     chunk  = ((start - 1) / WIDTH) + 1
     chunke = ((stop - 1) / WIDTH) + 1
 
@@ -42,7 +44,7 @@ class SubSeq
     (chunk..chunke).each do |i|
       value = @db.get(self.get_arg(i))
       if chunk == chunke
-        value = value[offset-1, length]
+        value = value[offset-1, (length - (offset-1))]
       elsif chunk == i
         value = value[offset-1, (WIDTH - offset + 1)]
       elsif chunke == i
