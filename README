@@ -35,6 +35,9 @@ rake test:subseq
 rake data:hg
 rake tcf:all
 
+rake benchmark:tcf 
+rake benchmark:chr1
+
 == Description ==
 
 
@@ -81,4 +84,4 @@ Same as Tokyo Cabinet, LGPL.
 
 == Acknowledgement ==
 
-The author thanks Dr. Itoshi Nikaido for his valuable comments.
+The author would like to thank Dr. Itoshi Nikaido for his valuable comments.

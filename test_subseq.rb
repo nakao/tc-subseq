@@ -29,9 +29,9 @@ test_tsv =<<END
 24      tagagaccagcctatgcaatatagtgagaccctatatctacaaaaaacaT
 END
 
-["test.tsv", "test.tcf"].each do |file|
+["test.tsv", "test.tcf"].each { |file|
   File.delete(file) if File.exists?(file)
-end
+}
 File.open("test.tsv", 'w') do |x|
   x.puts(test_tsv.gsub(/ +/, "\t"))
 end

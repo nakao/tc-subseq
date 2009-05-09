@@ -43,6 +43,7 @@ class SubSeq
 
     (chunk..chunke).each do |i|
       value = @db.get(self.get_arg(i))
+      raise ArgumentError, "out of range: #{i} in #{@file_name}" unless value
       if chunk == chunke
         value = value[offset-1, (length - (offset-1))]
       elsif chunk == i
