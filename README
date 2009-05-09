@@ -1,5 +1,6 @@
 = tc-subseq =
-human genome sequences on tokyo cabinet for sub-sequence exstraction
+
+human genome sequences on tokyo cabinet for fast sub-sequence exstraction
 
 == Usage ==
 
@@ -7,25 +8,25 @@ human genome sequences on tokyo cabinet for sub-sequence exstraction
 rake data:hg
 
 # Comvert fasta to tsv.
-rake data:tsv
+rake data:tsv_tcf
 
-# Create tch database
-rake tch:create
+# Create TCF database
+rake tcf:create
 
 # Import tsv file.
-rake tch:import
+rake tcf:import
 
 # Check data.
-tchmgr get chr chr1_1
+tcfmgr get chr1 1
 
 # Extract sub-sequence specified by chromosome:START,STOP
-ruby subseq.rb chr1:100010,100100
+ruby tcf_subseq.rb chr1:100010,100100
 
 == Statistics ==
 
 * Size of nucleotide: 
 * Size of fasta files: 
-* Size of tsv file: 3.7G
+* Size of tsv files: 
 * Size of index file:
 * Importing time:
 * Extracting speed:
