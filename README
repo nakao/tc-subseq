@@ -26,6 +26,15 @@ Human genome sequence on tokyo cabinet for fast sub-sequence exstraction
  $ ruby tcf_subseq.rb chr1:100010,100100
  GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
 
+# Unit test
+ $ rake test:subseq
+
+== Installation ==
+
+rake test:subseq
+rake data:hg
+rake tcf:all
+
 == Description ==
 
 
@@ -69,3 +78,7 @@ Mitsuteru Nakao <n AT bioruby.org>
 == Licence ==
 
 Same as Tokyo Cabinet, LGPL.
+
+== Acknowledgement ==
+
+The author thanks Dr. Itoshi Nikaido for his valuable comments.
