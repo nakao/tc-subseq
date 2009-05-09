@@ -7,20 +7,23 @@ Human genome sequence on tokyo cabinet for fast sub-sequence exstraction
 # Download chromFa.zip from UCSC.
  $ rake data:hg
 
-# Comvert fasta to tsv.
- $ rake data:tsv_tcf
+# Convert fasta to tsv.
+ $ rake tcf:tsv
 
-# Create TCF database
+# Create TCF db
  $ rake tcf:create
 
-# Import tsv file.
+# Import tsv files.
  $ rake tcf:import
 
-# Check data.
- $ tcfmgr get chr1 1
+# Remove tsv files.
+ $ rake tcf:tsv_remove
+
+# Check data on chr1.tcf TCF db
+ $ rake tcf:demo
 
 # Extract sub-sequence specified by chromosome:START,STOP
- $ time ruby tcf_subseq.rb chr1:100010,100100
+ $ ruby tcf_subseq.rb chr1:100010,100100
  GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
 
 == Description ==
@@ -31,7 +34,7 @@ Human genome sequence on tokyo cabinet for fast sub-sequence exstraction
 * Size of nucleotide: 
 * Size of fasta files: 3098800kb
 * Size of tsv files:   3357404kb
-* Size of index file:  3099084kb
+* Size of index files:  3099084kb
 
  239M chr1.fa
  275M chr1.tsv
