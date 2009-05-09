@@ -4,9 +4,9 @@ include TokyoCabinet
 # Abstract class for querying sub-sequence to Tokyo Cabinet db.
 #
 # Inherited class should have folowing variables and method:
-# 1. @db for Tokyo Cabinet db instance.
-# 2. @dbname for file name of db
-# 3. #get_arg(i) for convert method from chunk to key
+#  1. @db  -- Tokyo Cabinet db instance.
+#  2. @dbname -- file name of db
+#  3. #get_arg(chunk) -- convert method from chunk to key
 #
 class SubSeq
   WIDTH = 50    
