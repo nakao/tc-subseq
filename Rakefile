@@ -5,9 +5,9 @@ namespace :test do
   desc "unit test for subseq.rb"
   task :subseq do
     sh "ruby test_subseq.rb"
-    ["test.tsv", "test.tcf"].each do |file|
+    ["test.tsv", "test.tcf"].each { |file|
       File.delete(file) if File.exists?(file)
-    end
+    }
   end
 end
 
@@ -106,9 +106,72 @@ namespace :tcf do
     sh "time tcfmgr get #{tcf_file('chr1')} 1000000"    
     sh "time tcfmgr get #{tcf_file('chrX')} 100000"
   end
+end
 
-  namespace :benchmark do
-    
+namespace :benchmark do
+  require 'benchmark'
+  require 'subseq'
+
+  desc "chr1"
+  task :chr1 do
+    i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
+    i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
+    i = i.flatten.sort
+    Benchmark.bm(13) do |x|
+      x.report("14928 gets:") {
+        o = 0
+        i.each do |x|
+          i.each do |y|
+            next if x > y 
+            next if (x - y).abs > 1000
+            o += 1
+            TCF_SS.subseq("chr1", "#{x},#{y}")
+          end
+        end
+#        p o
+      }
+    end
+  end
+
+  desc "length"
+  task :length do
+    Benchmark.bm(13) do |x|
+      x.report("  1 nt/440:") { 
+        fa_files.each do |chr|
+          ["1,1", "10,10","11,11","10011,10011","10001,10001","1130,1130","120,120","751,751","3567,3567","12345,12345"].each do |pos|
+            TCF_SS.subseq(chr, pos) 
+          end
+        end
+      }
+      x.report(" 10 nt/440:") { 
+        fa_files.each do |chr|
+          ["1,11", "10,20","11,21","10011,10021","10001,10011","1130,1140","120,130","751,761","3567,3577","12345,12355"].each do |pos|
+            TCF_SS.subseq(chr, pos) 
+          end
+        end
+      }
+      x.report("100 nt/440:") { 
+        fa_files.each do |chr|
+          ["1,101", "10,110","11,111","10011,10111","10001,10101","1130,1230","120,220","751,851","3567,3667","12345,12445"].each do |pos|
+            TCF_SS.subseq(chr, pos) 
+          end
+        end
+      }
+      x.report(" 1k nt/440:") { 
+        fa_files.each do |chr|
+          ["1,1001", "110,1110","11,1011","10011,11011","10001,11001","10,1010","20,1020","761,1761","3567,4567","12345,13345"].each do |pos|
+            TCF_SS.subseq(chr, pos) 
+          end
+        end
+      }
+      x.report("10k nt/440:") { 
+        fa_files.each do |chr|
+          ["1,10000", "1,10001","11,11201","201,11201","10001,10010","10,10030","20,10200","751,10761","3000,13000","2345,13345"].each do |pos|
+            TCF_SS.subseq(chr, pos) 
+          end
+        end
+      }
+    end
   end
 end
 
