@@ -5,29 +5,18 @@ Human genome sequence on tokyo cabinet for fast sub-sequence exstraction
 == Usage ==
 
 # Download chromFa.zip from UCSC.
- $ rake data:hg
+rake data:hg
 
-# Convert fasta to tsv.
- $ rake tcf:tsv
-
-# Create TCF db
- $ rake tcf:create
-
-# Import tsv files.
- $ rake tcf:import
-
-# Remove tsv files.
- $ rake tcf:tsv_remove
+# Create TCF db from chr*.fa
+rake tcf:create
 
 # Check data on chr1.tcf TCF db
- $ rake tcf:demo
+rake tcf:demo
 
 # Extract sub-sequence specified by chromosome:START,STOP
- $ ruby tcf_subseq.rb chr1:100010,100100
- GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
+ruby tcf_subseq.rb chr1:100010,100100
+GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
 
-# Unit test
- $ rake test:subseq
 
 == Installation ==
 
@@ -37,6 +26,7 @@ rake tcf:all
 
 rake benchmark:tcf 
 rake benchmark:chr1
+
 
 == Description ==
 
@@ -52,14 +42,12 @@ rake benchmark:chr1
  275M chr1.tsv
  239M chr1.tcf
 
-* Importing time:
 
-* Extracting speed:
+* Benchmark
 
 ** TCFDB
 
-$ rake benchmark:tcf:length
-(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+$ rake benchmark:tcf:length -s
                        user     system      total        real
 TCF   1 nt/440:    0.010000   0.020000   0.030000 (  0.045681)
 TCF  10 nt/440:    0.020000   0.030000   0.050000 (  0.046877)
@@ -68,16 +56,14 @@ TC F 1k nt/440:    0.080000   0.030000   0.110000 (  0.110665)
 TCF 10k nt/440:    0.370000   0.030000   0.400000 (  0.423921)
 
 
-$ rake benchmark:tcf:chr1
-(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+$ rake benchmark:tcf:chr1 -s
                    user     system      total        real
 14928 gets:    1.520000   0.820000   2.340000 (  2.369265)
 
 
 ** TCHDB
 
-$ rake benchmark:tch:length
-(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+$ rake benchmark:tch:length -s
                        user     system      total        real
 TCH   1 nt/440:    0.020000   0.030000   0.050000 (  0.079173)
 TCH  10 nt/440:    0.030000   0.040000   0.070000 (  0.075760)
@@ -86,8 +72,7 @@ TCH  1k nt/440:    0.100000   0.040000   0.140000 (  0.152413)
 TCH 10k nt/440:    0.430000   0.070000   0.500000 (  0.531710)
 
 
-$ rake benchmark:tch:chr1
-(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+$ rake benchmark:tch:chr1 -s
                    user     system      total        real
 14928 gets:    1.970000   1.310000   3.280000 (  3.647801)
 
