@@ -2,10 +2,18 @@
 #
 
 namespace :test do
+  desc "remove files for test."
+  task :clean do
+    Dir.glob("test?t*").each do |file|
+      puts "#{file} removed"
+      File.delete(file)
+    end
+  end
+  
   desc "unit test for subseq.rb"
   task :subseq do
     sh "ruby test_subseq.rb"
-    ["test.tsv", "test.tcf"].each { |file|
+    ["test_tch.tsv", "test_tcf.tsv", "test.tcf"].each { |file|
       File.delete(file) if File.exists?(file)
     }
   end
