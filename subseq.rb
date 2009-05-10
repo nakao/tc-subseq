@@ -84,6 +84,6 @@ class TCH_SS < SubSeq
   protected
   
   def get_arg(i)
-    "#{@chr}_#{i}"
+    "#{i}"
   end
 end
