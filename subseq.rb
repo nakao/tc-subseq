@@ -77,12 +77,13 @@ class TCH_SS < SubSeq
   def initialize(chr, pos)
     @file_name = "#{chr}.tch"
     @db = HDB::new
+    @chr = chr
     super(pos)
   end
 
   protected
   
   def get_arg(i)
-    "#{chr}_#{i}"
+    "#{@chr}_#{i}"
   end
 end
