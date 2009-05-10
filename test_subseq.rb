@@ -29,16 +29,31 @@ test_tsv =<<END
 24      tagagaccagcctatgcaatatagtgagaccctatatctacaaaaaacaT
 END
 
-["test.tsv", "test.tcf"].each { |file|
+# prepare TCF test db
+["test_tcf.tsv", "test.tcf"].each { |file|
   File.delete(file) if File.exists?(file)
 }
-File.open("test.tsv", 'w') do |x|
+File.open("test_tcf.tsv", 'w') { |x|
   x.puts(test_tsv.gsub(/ +/, "\t"))
-end
+}
 IO.popen "tcfmgr create test.tcf 50"
 Process.wait
-IO.popen "tcfmgr importtsv test.tcf test.tsv"
+IO.popen "tcfmgr importtsv test.tcf test_tcf.tsv"
 Process.wait
+
+
+# prepare TCH test db
+["test_tch.tsv", "test.tch"].each { |file|
+  File.delete(file) if File.exists?(file)
+}
+File.open("test_tch.tsv", 'w') { |x|
+  x.puts(test_tsv.gsub(/^(\d+)/, 'test_\1').gsub(/ +/, "\t"))
+}
+IO.popen "tchmgr create test.tch"
+Process.wait
+IO.popen "tchmgr importtsv test.tch test_tch.tsv"
+Process.wait
+
 
 class TestTCF_SS < Test::Unit::TestCase
   def test_test_1_1_is_c
@@ -109,6 +124,79 @@ class TestTCF_SS < Test::Unit::TestCase
 
   def test_chr1_random_3_1_is_ArgumentError
     assert_raise(ArgumentError) { TCF_SS.subseq("test", "3,1") }
+  end
+
+end
+
+class TestTCH_SS < Test::Unit::TestCase
+  def test_test_1_1_is_c
+    assert_equal('c', TCH_SS.subseq("test", "1,1"))
+  end
+
+  def test_test_1_3_is_cct
+    assert_equal('cct', TCH_SS.subseq("test", "1,3"))
+  end
+
+  def test_test_2_3_is_cct
+    assert_equal('ct', TCH_SS.subseq("test", "2,3"))
+  end
+
+  def test_test_1_49_is_49
+    ss = TCH_SS.subseq("test", "1,49")
+    assert_equal(49, ss.length)
+  end
+
+  def test_test_1_50_is_50
+    ss = TCH_SS.subseq("test", "1,50")
+    assert_equal(50, ss.length)
+  end
+
+  def test_test_1_51_is_51
+    ss = TCH_SS.subseq("test", "1,51")
+    assert_equal(51, ss.length)
+  end
+
+  def test_test_2_51_is_50
+    ss = TCH_SS.subseq("test", "2,51")
+    assert_equal(50, ss.length)
+  end
+
+  def test_test_2_52_is_51
+    ss = TCH_SS.subseq("test", "2,52")
+    assert_equal("ctggccaatttttgtatttttagtagaggtgtggtttcactatgttggcca", ss)
+    assert_equal(51, ss.length)
+  end
+
+  def test_test_10_30_is_21
+    ss = TCH_SS.subseq("test", "10,30")
+    assert_equal("tttttgtatttttagtagagg", ss)
+    assert_equal(21, ss.length)
+  end
+
+  def test_test_10_130_is_121
+    ss = TCH_SS.subseq("test", "10,130")
+    assert_equal(121, ss.length)
+  end
+
+  def test_chr1_random_10_1130_is_1121
+    ss = TCH_SS.subseq("test", "10,1130")
+    assert_equal(1121, ss.length)
+  end
+
+  def test_test_
+    i = [1,2,3,4,5,48,49,50,51,52,97,98,99,100,101,102,103,997,998,999,1000,1001,1002]
+    i.each do |s|
+      i.each do |e|
+        next if s > e
+        length = e - s + 1
+        ss = TCH_SS.subseq("test", "#{s},#{e}")
+        assert_equal([length, s, e], [ss.length, s, e])
+      end
+    end
+  end
+
+  def test_chr1_random_3_1_is_ArgumentError
+    assert_raise(ArgumentError) { TCH_SS.subseq("test", "3,1") }
   end
 
 end
