@@ -54,16 +54,43 @@ rake benchmark:chr1
 
 * Importing time:
 
- $ time rake tcf:import
- real 1m50.811s
- user 0m49.003s
- sys 0m18.312s
-
 * Extracting speed:
 
- $ time ruby tcf_subseq.rb chr1:100010,100100
- GTGTTGAGCTTAGTAAGTCACCAAACACCTTCTGCTCAGCAGCATAAAGGACATTTCCATGAAACCTCCCAGGGATAATCTTATTTACTCT
- ruby tcf_subseq.rb   0.00s user 0.00s system 74% cpu 0.008 total
+** TCFDB
+
+$ rake benchmark:tcf:length
+(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+                       user     system      total        real
+TCF   1 nt/440:    0.010000   0.020000   0.030000 (  0.045681)
+TCF  10 nt/440:    0.020000   0.030000   0.050000 (  0.046877)
+TCF 100 nt/440:    0.040000   0.030000   0.070000 (  0.071411)
+TC F 1k nt/440:    0.080000   0.030000   0.110000 (  0.110665)
+TCF 10k nt/440:    0.370000   0.030000   0.400000 (  0.423921)
+
+
+$ rake benchmark:tcf:chr1
+(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+                   user     system      total        real
+14928 gets:    1.520000   0.820000   2.340000 (  2.369265)
+
+
+** TCHDB
+
+$ rake benchmark:tch:length
+(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+                       user     system      total        real
+TCH   1 nt/440:    0.020000   0.030000   0.050000 (  0.079173)
+TCH  10 nt/440:    0.030000   0.040000   0.070000 (  0.075760)
+TCH 100 nt/440:    0.050000   0.040000   0.090000 (  0.105880)
+TCH  1k nt/440:    0.100000   0.040000   0.140000 (  0.152413)
+TCH 10k nt/440:    0.430000   0.070000   0.500000 (  0.531710)
+
+
+$ rake benchmark:tch:chr1
+(in /Users/nakao/Applications/DBCLS/tokyocabinet/hg)
+                   user     system      total        real
+14928 gets:    1.970000   1.310000   3.280000 (  3.647801)
+
 
 
 == Dependency ==
