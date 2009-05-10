@@ -63,6 +63,7 @@ namespace :tcf do
   task :all => [:tsv, :create, :import, :demo]
 
   
+  # egrep -v '^>' chr1.fa | cat -n | sed -e 's/ //g' > chr1.fa
   desc "make TSV files (#{tsv_file('chr*')}) for TCF DB."
   task :tsv do
     entry_id = ""
@@ -120,45 +121,46 @@ namespace :benchmark do
   require 'benchmark'
   require 'subseq'
 
-  desc "chr1"
-  task :chr1 do
-    i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
-    i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
-    i = i.flatten.sort
-    Benchmark.bm(13) do |x|
-      x.report("14928 gets:") {
-        o = 0
-        i.each do |x|
-          i.each do |y|
-            next if x > y 
-            next if (x - y).abs > 1000
-            o += 1
-            TCF_SS.subseq("chr1", "#{x},#{y}")
+  namespace :hcf do
+    desc "chr1"
+    task :chr1 do
+      i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
+      i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
+      i = i.flatten.sort
+      Benchmark.bm(13) do |x|
+        x.report("14928 gets:") {
+          o = 0
+          i.each do |x|
+            i.each do |y|
+              next if x > y 
+              next if (x - y).abs > 1000
+              o += 1
+              TCF_SS.subseq("chr1", "#{x},#{y}")
+            end
           end
-        end
-#        p o
-      }
+          #        p o
+        }
+      end
     end
-  end
 
-  desc "length"
-  task :length do
-    Benchmark.bm(13) do |x|
-      x.report("  1 nt/440:") { 
+    desc "length"
+    task :length do
+      Benchmark.bm(17) do |x|
+        x.report("TCF  1 nt/440:") { 
         fa_files.each do |chr|
           ["1,1", "10,10","11,11","10011,10011","10001,10001","1130,1130","120,120","751,751","3567,3567","12345,12345"].each do |pos|
             TCF_SS.subseq(chr, pos) 
           end
         end
       }
-      x.report(" 10 nt/440:") { 
+      x.report("TCF 10 nt/440:") { 
         fa_files.each do |chr|
           ["1,11", "10,20","11,21","10011,10021","10001,10011","1130,1140","120,130","751,761","3567,3577","12345,12355"].each do |pos|
             TCF_SS.subseq(chr, pos) 
           end
         end
       }
-      x.report("100 nt/440:") { 
+      x.report("TCF 100 nt/440:") { 
         fa_files.each do |chr|
           ["1,101", "10,110","11,111","10011,10111","10001,10101","1130,1230","120,220","751,851","3567,3667","12345,12445"].each do |pos|
             TCF_SS.subseq(chr, pos) 
@@ -172,33 +174,108 @@ namespace :benchmark do
           end
         end
       }
-      x.report("10k nt/440:") { 
+      x.report("TCF 10k nt/440:") { 
         fa_files.each do |chr|
           ["1,10000", "1,10001","11,11201","201,11201","10001,10010","10,10030","20,10200","751,10761","3000,13000","2345,13345"].each do |pos|
             TCF_SS.subseq(chr, pos) 
           end
         end
       }
+      end
     end
-  end
-end
+  end # tcf
+
+  namespace :tch do
+    desc "chr1"
+    task :chr1 do
+      i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
+      i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
+      i = i.flatten.sort
+      Benchmark.bm(13) do |x|
+        x.report("14928 gets:") {
+          o = 0
+          i.each do |x|
+            i.each do |y|
+              next if x > y 
+              next if (x - y).abs > 1000
+              o += 1
+              TCH_SS.subseq("chr1", "#{x},#{y}")
+            end
+          end
+          #        p o
+        }
+      end
+    end
+
+    desc "length"
+    task :length do
+      Benchmark.bm(17) do |x|
+        x.report("TCH  1 nt/440:") { 
+          fa_files.each do |chr|
+            ["1,1", "10,10","11,11","10011,10011","10001,10001","1130,1130","120,120","751,751","3567,3567","12345,12345"].each do |pos|
+              TCH_SS.subseq(chr, pos) 
+            end
+          end
+        }
+        x.report("TCH 10 nt/440:") { 
+          fa_files.each do |chr|
+            ["1,11", "10,20","11,21","10011,10021","10001,10011","1130,1140","120,130","751,761","3567,3577","12345,12355"].each do |pos|
+              TCH_SS.subseq(chr, pos) 
+            end
+          end
+        }
+        x.report("TCH 100 nt/440:") { 
+          fa_files.each do |chr|
+            ["1,101", "10,110","11,111","10011,10111","10001,10101","1130,1230","120,220","751,851","3567,3667","12345,12445"].each do |pos|
+              TCH_SS.subseq(chr, pos) 
+            end
+          end
+        }
+        x.report("TCH 1k nt/440:") { 
+          fa_files.each do |chr|
+            ["1,1001", "110,1110","11,1011","10011,11011","10001,11001","10,1010","20,1020","761,1761","3567,4567","12345,13345"].each do |pos|
+              TCH_SS.subseq(chr, pos) 
+            end
+          end
+        }
+        x.report("TCH 10k nt/440:") { 
+          fa_files.each do |chr|
+            ["1,10000", "1,10001","11,11201","201,11201","10001,10010","10,10030","20,10200","751,10761","3000,13000","2345,13345"].each do |pos|
+              TCH_SS.subseq(chr, pos) 
+            end
+          end
+        }
+      end
+    end
+  end # tch
+end # benchmark
 
 
-__END__
 
 
 namespace :tch do
-  task :all => [:tsv, :create, :import] do
+  def fasta_file(entry_id)
+    "#{entry_id}.fa"
+  end
+
+  def tsv_file(entry_id)
+    "#{entry_id}_tch.tsv"
+  end
+
+  def tch_file(entry_id)
+    "#{entry_id}.tch"
+  end
+  
+  task :all => [:tsv, :create, :import, :tsv_remove, :demo] do
     puts "try ruby tcf_subseq.rb chr1:1000010,1000100"
   end
 
   desc "make TSV files for TCH DB."
   task :tsv do
-    entry_id = ""
     fa_files.each do |entry_id|
-      STDERR.p file_name = "tch_#{entry_id}.tsv" 
+      STDERR.puts file_name = tsv_file(entry_id)
       File.open(file_name, "w") do |f|
-        File.open("#{entry_id}.fa").each_with_index do |line, i|
+        File.open(fasta_file(entry_id)).each_with_index do |line, i|
           next if line =~ /^>/
           line.chomp!
           f.puts ["#{entry_id}_#{i}", line].join("\t")
@@ -210,12 +287,12 @@ namespace :tch do
   desc "remove TSV files (chr*_tch.tsv)."
   task :tsv_remove do
     fa_files.each do |entry_id|
-      print entry_id
+      STDERR.print entry_id
       begin
-        File.delete("#{entry_id}_tch.tsv")
-        puts
+        File.delete(tsv_file(entry_id))
+        STDERR.puts
       rescue
-        puts $!
+        STDERR.puts $!
       end
     end
   end
@@ -224,14 +301,14 @@ namespace :tch do
   desc "create TCH db files (chr*.tch)"
   task :create do
     fa_files.each do |entry_id|
-      sh "tchmgr create #{entry_id}.tch"
+      sh "tchmgr create #{tch_file(entry_id)}"
     end
   end
 
   desc "import TSV files into TCH db"
   task :import do
     fa_files.each do |entry_id|    
-      sh "tchmgr importtsv #{entry_id}.tch #{entry_id}_tch.tsv"
+      sh "tchmgr importtsv #{tch_file(entry_id)} #{tsv_file(entry_id)}"
     end
   end
   
@@ -242,17 +319,17 @@ namespace :tch do
   end
 end
 
-
+__END__
 
 namespace :tch_hg do
   desc "make TSV file."
   task "tsv" do
     entry_id = ""
     fa_files = Dir.glob("*.fa")
-    STDERR.p fa_files
+    STDERR.puts fa_files
     File.open("hg.tsv", "w") do |f|
       fa_files.each do |chr|
-        STDERR.p chr
+        STDERR.puts chr
         entry_id = chr.split(".fa").first
         File.open(chr).each_with_index do |line, i|
           next if line =~ /^>/
@@ -278,5 +355,6 @@ namespace :tch_hg do
     sh "tchmgr get hg.tch chr1_10"
   end
 end
+
 
 
