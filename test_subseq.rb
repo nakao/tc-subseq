@@ -33,26 +33,34 @@ END
 ["test_tcf.tsv", "test.tcf"].each { |file|
   File.delete(file) if File.exists?(file)
 }
-File.open("test_tcf.tsv", 'w') { |x|
-  x.puts(test_tsv.gsub(/ +/, "\t"))
-}
-IO.popen "tcfmgr create test.tcf 50"
-Process.wait
-IO.popen "tcfmgr importtsv test.tcf test_tcf.tsv"
-Process.wait
+
+fdb = FDB::new
+if !fdb.open("test.tcf", FDB::OWRITER | FDB::OCREAT)
+  ecode = fdb.ecode
+  STDERR.printf("open error: %s\n", fdb.errmsg(ecode))
+end
+width = 50
+fdb.tune(width)
+test_tsv.map {|x| x.chomp.split(/\s+/) }.each do |key, value|
+  fdb.put(key.to_i, value)
+end
+fdb.close
 
 
 # prepare TCH test db
 ["test_tch.tsv", "test.tch"].each { |file|
   File.delete(file) if File.exists?(file)
 }
-File.open("test_tch.tsv", 'w') { |x|
-  x.puts(test_tsv.gsub(/^(\d+)/, 'test_\1').gsub(/ +/, "\t"))
-}
-IO.popen "tchmgr create test.tch"
-Process.wait
-IO.popen "tchmgr importtsv test.tch test_tch.tsv"
-Process.wait
+hdb = HDB::new
+if !hdb.open("test.tch", HDB::OWRITER | HDB::OCREAT)
+  ecode = hdb.ecode
+  STDERR.printf("open error: %s\n", hdb.errmsg(ecode))
+end
+test_tsv.map {|x| x.chomp.split(/\s+/) }.each do |key, value|
+  hdb.put("test_#{key.to_i}", value)
+end
+hdb.close
+
 
 
 class TestTCF_SS < Test::Unit::TestCase
