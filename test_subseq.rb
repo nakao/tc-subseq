@@ -57,7 +57,7 @@ if !hdb.open("test.tch", HDB::OWRITER | HDB::OCREAT)
   STDERR.printf("open error: %s\n", hdb.errmsg(ecode))
 end
 test_tsv.map {|x| x.chomp.split(/\s+/) }.each do |key, value|
-  hdb.put("test_#{key.to_i}", value)
+  hdb.put("#{key.to_i}", value)
 end
 hdb.close
 
@@ -135,6 +135,7 @@ class TestTCF_SS < Test::Unit::TestCase
   end
 
 end
+
 
 class TestTCH_SS < Test::Unit::TestCase
   def test_test_1_1_is_c
