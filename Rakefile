@@ -23,32 +23,80 @@ end
 
 namespace :data do
   namespace :ucsc do
-    desc "UCSC hg chromFa."
-    task :hg do
+    def dl_ext(url)
+      sh "curl -O #{url}"
+      case url
+      when /zip$/
+        sh "unzip #{url.split("/").last}"
+      when /.tar.gz$/
+        sh "tar zxvf #{hg.split("/").last}"
+      end
+    end
+
+    desc "UCSC hg18 chromFa.zip"
+    task :hg18 do
       hg = "http://hgdownload.cse.ucsc.edu/goldenPath/10april2003/bigZips/chromFa.zip"
-      sh "curl -O #{hg}"
-      sh "unzip #{hg.split("/").last}"
+      dl_ext(hg)
     end
+
+    desc "UCSC hg18 chromFaMasked.zip"
+    task :hg18masked do
+      hg = "http://hgdownload.cse.ucsc.edu/goldenPath/10april2003/bigZips/chromFaMasked.zip"
+      dl_ext(hg)
+    end
+
+    desc "UCSC hg19 chromFa.tar.gz"
+    task :hg19 do
+      hg = "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFa.tar.gz"
+      dl_ext(hg)
+    end
+
+    desc "UCSC hg19 chromFaMasked.tar.gz."
+    task :hg19masked do
+      url = "http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFaMasked.tar.gz"
+      dl_ext(url)
+    end
+
     
-    desc "UCSC mm chromFa."
+    desc "UCSC mm9 chromFa.tar.gz"
     task :mm do
-      puts "Not-implemented yet."
+      url = 'http://hgdownload.cse.ucsc.edu/goldenPath/mm9/bigZips/chromFa.tar.gz'
+      dl_ext(url)
     end
+
+    desc "UCSC mm9 chromFaMasked.tar.gz."
+    task :mm do
+      url = 'http://hgdownload.cse.ucsc.edu/goldenPath/mm9/bigZips/chromFaMasked.tar.gz'
+      dl_ext(url)
+    end
+
   end
 end
 
 
+#
+def fasta_postfix
+  if Dir.glob("*.fa").size > 1
+    ".fa"
+  elsif Dir.glob("*.fa.masked").size > 1
+    ".fa.masked"
+  else
+    raise "No *.fa nor *.fa.masked files"
+  end
+end
+
+def fasta_file(entry_id)
+  "#{entry_id}#{fasta_postfix}"
+end
+
 def fa_files
-  Dir.glob("*.fa").map do |file|
-    file.split(".fa").first
+  Dir.glob(fasta_file("*")).map do |file|
+    file.split(fasta_postfix).first
   end
 end
 
 
 namespace :tcf do
-  def fasta_file(entry_id)
-    "#{entry_id}.fa"
-  end
 
   def tsv_file(entry_id)
     "#{entry_id}_tcf.tsv"
@@ -163,24 +211,64 @@ namespace :benchmark do
   require 'benchmark'
   require 'subseq'
 
-  namespace :tcf do
+  def chr1q
+    i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
+    i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
+    i = i.flatten.sort
+  end
+
+  namespace :tcfmgr do
     desc "chr1"
     task :chr1 do
-      i = [1,2,3,4,5,6,7,11,13,16,17,23,29,32,48,49,50,51,52,64,98,99,100,101,102,128,223,256,333,512,777,998,999,1000,1024,9999,10000,10001,11111,22222,33333,44444,55555,99998,99999,100001,100002,999999,1000000,1000001] 
-      i = i + i.map {|y| [y * 3, y * 5, y * 7, y * 13, y * 17, y * 103] }
-      i = i.flatten.sort
       Benchmark.bm(13) do |x|
         x.report("14928 gets:") {
           o = 0
-          i.each do |x|
-            i.each do |y|
+          chr1q.each do |x|
+            chr1q.each do |y|
+              next if x > y 
+              next if (x - y).abs > 1000
+              o += 1
+              sh "tcfmgr get chr1.tcf #{x/50+1} > out.fa"
+            end
+          end
+        }
+      end
+    end
+  end
+
+  namespace :tcf do
+    desc "chr1"
+    task :chr1 do
+      Benchmark.bm(13) do |x|
+        x.report("14928 gets:") {
+          o = 0
+          chr1q.each do |x|
+            chr1q.each do |y|
               next if x > y 
               next if (x - y).abs > 1000
               o += 1
               TCF_SS.subseq("chr1", "#{x},#{y}")
             end
           end
-          #        p o
+        }
+      end
+    end
+
+    desc "chr1"
+    task :chr1file do
+      Benchmark.bm(13) do |x|
+        x.report("14928 gets:") {
+          o = 0
+          chr1q.each do |x|
+            chr1q.each do |y|
+              next if x > y 
+              next if (x - y).abs > 1000
+              o += 1
+              fa = File.new("out.fa", 'w')
+              fa.puts TCF_SS.subseq("chr1", "#{x},#{y}")
+              fa.close
+            end
+          end
         }
       end
     end
@@ -189,12 +277,13 @@ namespace :benchmark do
     task :length do
       Benchmark.bm(17) do |x|
         x.report("TCF   1 nt/440:") { 
-        fa_files.each do |chr|
-          ["1,1", "10,10","11,11","10011,10011","10001,10001","1130,1130","120,120","751,751","3567,3567","12345,12345"].each do |pos|
-            TCF_SS.subseq(chr, pos) 
+          fa_files.each do |chr|
+            next unless chr =~ /^chr[0-9XY]+$/  
+            ["1,1", "10,10","11,11","10011,10011","10001,10001","1130,1130","120,120","751,751","3567,3567","12345,12345"].each do |pos|
+              TCF_SS.subseq(chr, pos) 
+            end
           end
-        end
-      }
+        }
       x.report("TCF  10 nt/440:") { 
         fa_files.each do |chr|
           ["1,11", "10,20","11,21","10011,10021","10001,10011","1130,1140","120,130","751,761","3567,3577","12345,12355"].each do |pos|
@@ -296,10 +385,6 @@ end # benchmark
 
 
 namespace :tch do
-  def fasta_file(entry_id)
-    "#{entry_id}.fa"
-  end
-
   def tsv_file(entry_id)
     "#{entry_id}_tch.tsv"
   end
@@ -375,6 +460,26 @@ namespace :tch do
   end
 end
 
+
+
+namespace :syn do
+  desc 'syn'
+  task :syn do
+    orfs = File.open('genes.txt').read.split("\n").map {|x| x.split("\t") }
+    orfs.each do |orf|
+      gene = orf[1]
+      chr = orf[2]
+      start = orf[3].to_i
+      stop = orf[4].to_i
+
+      next if start < 0 or stop < 0 or chr != 'Chr'
+      puts ">#{gene} [#{orf[0]}:#{chr}:#{start},#{stop}] #{orf[5]} #{orf[6]}"
+      p TCF_SS.new("syn", "#{start},#{stop}", 70).subseq
+    end
+  end
+end
+
+
 __END__
 
 namespace :tch_hg do
@@ -411,6 +516,4 @@ namespace :tch_hg do
     sh "tchmgr get hg.tch chr1_10"
   end
 end
-
-
 
