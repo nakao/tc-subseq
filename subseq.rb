@@ -33,13 +33,19 @@ class SubSeq
     start = start.to_i
     stop  = stop.to_i
     raise ArgumentError, "Sub-sequence position should be 'start <= stop'." if start > stop
-    
-    chunk  = ((start - 1) / WIDTH) + 1
-    chunke = ((stop - 1) / WIDTH) + 1
+
+    unless @width
+      width = WIDTH 
+    else
+      width = @width.to_i
+    end
+
+    chunk  = ((start - 1) / width) + 1
+    chunke = ((stop - 1) / width) + 1
 
     @subseq = ""
-    offset = start - (chunk - 1) * WIDTH
-    length = stop - (chunke - 1) * WIDTH
+    offset = start - (chunk - 1) * width
+    length = stop - (chunke - 1) * width
 
     (chunk..chunke).each do |i|
       value = @db.get(self.get_arg(i))
@@ -47,7 +53,7 @@ class SubSeq
       if chunk == chunke
         value = value[offset-1, (length - (offset-1))]
       elsif chunk == i
-        value = value[offset-1, (WIDTH - offset + 1)]
+        value = value[offset-1, (width - offset + 1)]
       elsif chunke == i
         value = value[0, length]
       end
@@ -57,11 +63,13 @@ class SubSeq
   end
 end
 
+
 # Implimantation of sub-sequence extraction using TCF Tokyo Cabinet Fixed-length Index.
 class TCF_SS < SubSeq
-  def initialize(chr, pos)
+  def initialize(chr, pos, width = nil)
     @file_name = "#{chr}.tcf"
     @db = FDB::new
+    @width = width
     super(pos)
   end
 
@@ -77,7 +85,6 @@ class TCH_SS < SubSeq
   def initialize(chr, pos)
     @file_name = "#{chr}.tch"
     @db = HDB::new
-    @chr = chr
     super(pos)
   end
 
